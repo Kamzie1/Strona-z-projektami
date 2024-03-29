@@ -1,2 +1,0 @@
-# fizyka
-wzory fizyczne
