@@ -1,0 +1,10 @@
+#eggImage {
+    position: absolute;
+  }
+
+body{
+    text-align: left;
+  }
+.timer{
+    font-size: 24px;
+}
