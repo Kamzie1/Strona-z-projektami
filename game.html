@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssgame.css" rel="stylesheet"/>
+<title>Game Page</title>
+</head>
+<body>
+
+<img id="eggImage" src="images/egg1.jpg" alt="Egg">
+<div class="timer">
+<p id="timer">Time: 0</p>
+</div>
+
+<script>
+var startTime, totalClicks = 0;
+var maxClicks = 11; // Maximum number of clicks allowed
+var clickTimes = []; // Array to store time taken for each click
+var eggImages = ['images/egg1.jpg', 'images/egg2.jpg', 'images/egg3.jpg', 'images/egg4.jpg', 'images/egg5.jpg', 'images/egg6.jpg'];
+var timerDisplay = document.getElementById('timer');
+var eggCountDisplay = document.getElementById('eggCount');
+
+document.getElementById('eggImage').addEventListener('click', function() {
+  if (totalClicks < maxClicks) {
+    if (!startTime) {
+      startTime = new Date();
+    } else {
+      var endTime = new Date();
+      var clickTime = (endTime - startTime) / 1000; // Calculate time between clicks in seconds
+      clickTimes.push(clickTime);
+      startTime = endTime; // Update start time for next click
+      updateTimer(clickTime);
+    }
+    totalClicks++;
+    if (totalClicks === maxClicks) {
+      // If the maximum number of clicks is reached, display leaderboard and reset game
+      displayLeaderboard();
+    } else {
+      var randomIndex = Math.floor(Math.random() * eggImages.length);
+      document.getElementById('eggImage').src = eggImages[randomIndex];
+      var egg = event.target;
+      var randomX = Math.floor(Math.random() * (window.innerWidth - egg.width));
+      var randomY = Math.floor(Math.random() * (window.innerHeight - egg.height));
+      egg.style.left = randomX + 'px';
+      egg.style.top = randomY + 'px';
+    }
+  }
+});
+
+function updateTimer(time) {
+  timerDisplay.textContent = 'Time: ' + time.toFixed(2) + 's';
+}
+
+function displayLeaderboard() {
+  // Calculate total time by summing up individual click times
+  var totalTime = clickTimes.reduce((total, time) => total + time, 0);
+  // Save leaderboard to localStorage
+  localStorage.setItem('leaderboard', JSON.stringify(clickTimes));
+  // Redirect to main.html
+  window.location.href = 'main.html';
+}
+
+</script>
+
+</body>
+</html>
