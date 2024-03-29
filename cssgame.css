@@ -1,13 +1,27 @@
 #eggImage {
     position: absolute;
-  }
+}
 
 body{
-    text-align: left;
-  }
-.timer{
-    font-size: 24px;
+    background-image: url(https://t4.ftcdn.net/jpg/02/08/75/59/360_F_208755902_hIkLaYrBn7PlClCsAINjizqGdq2SmAyJ.jpg);
+    position: relative;
+    background-repeat:no-repeat;
+    text-align: center;
+    background-size: 100% auto;
 }
+
+p{
+  margin: 0px;
+}
+.section{
+  font-size: medium;
+}
+
+.clock{
+    font-size: 100px;
+    margin: 5px;
+}
+
 img{
     width: 100px;
     height: 75px;

@@ -11,30 +11,22 @@
 <h1>Witam w grze klikanie jajka!</h1>
 <hr>
 <h2>Zasady gry:</h2>
-<section>
+<section class="section">
   <p>Naciśnij start, aby zacząć</p>
   <p>Kiedy gra się zacznie klikaj w jajka jak najszybciej</p>
-  <p>Pojawi się 20 jajek w różnych miejscach. Powodzenia!</p>
+  <p>Masz minutę na zdobycie jak największej ilości jajek. Powodzenia!</p>
 </section>
 <div id="leaderboard"></div>
 <article class="button">
-    <button class="button"><a href="game.html">Start</a></button> 
+    <button class="button"><a href="game_mode.html">Start</a></button> 
 </article>
 
 <script>
-var leaderboardData = localStorage.getItem('leaderboard');
-var totalTime=0;
+var leaderboardData = localStorage.getItem('eggs');
 if (leaderboardData) {
   var leaderboard = JSON.parse(leaderboardData);
   // Display leaderboard
-  var leaderboardHTML = '<h2>Leaderboard</h2><p>';
-  leaderboard.forEach((time, index) => {
-    leaderboardHTML += '<p class="leaderborad">Click #' + (index + 1) + ': ' + time.toFixed(2) + 's</p>';
-    totalTime = time+ totalTime;
-  });
-  leaderboardHTML += '</p>';
-  leaderboardHTML += '<h3>Total Time</h3>';
-  leaderboardHTML += '<p class="totalTime">' +totalTime+ '</p>';
+  var leaderboardHTML = '<h2>Leaderboard</h2><div class="leaderboard">'+leaderboard+'</div>';
   document.getElementById('leaderboard').innerHTML = leaderboardHTML;
 } else {
   document.getElementById('leaderboard').innerHTML = '<p>No leaderboard data available.</p>';
