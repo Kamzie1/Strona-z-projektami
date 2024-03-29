@@ -5,7 +5,7 @@
 body{
     background-image: url(https://t4.ftcdn.net/jpg/02/08/75/59/360_F_208755902_hIkLaYrBn7PlClCsAINjizqGdq2SmAyJ.jpg);
     position: relative;
-    background-repeat:no-repeat;
+    background-repeat:repeat;
     text-align: center;
     background-size: 100% auto;
 }
