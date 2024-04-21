@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssWielkanocMain.css" rel="stylesheet"/>
+<title>Prezent Wielkanocny</title>
+</head>
+<body>
+<div class="panel">
+  <table>
+    <tr>
+      <td><img id="strzalka" src="images/strzalka.jpg" alt="strzalka"></td><td><h1>Witam w grze klikanie jajka!</h1></td>
+    </tr>
+  </table>
+<hr>
+<h2>Zasady gry:</h2>
+<section class="zasady">
+  <ul>
+    <h3>Wybierz mod:</h3>
+    <ol><h4>W pierwszym klikasz jak najwięcej jajek w minutę:</h4>
+        <article class="button" id="mod 1">
+            <button class="button"><a href="main_mode.html">Start</a></button> 
+        </article></ol>
+    <ol><h4>W drugim klikasz 20 jajek jak najszybciej:</h4>
+        <article class="button" id="mod 2">
+            <button class="button"><a href="main.html">Start</a></button> 
+        </article>
+    </ol>
+  </ul>
+</section>
+<script>
+  document.getElementById('strzalka').addEventListener('click', function() {
+  window.location.href = 'main.html';
+});
+</script>
+</div>
+</body>
+</html>

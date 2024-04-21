@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssWielkanocMain.css" rel="stylesheet"/>
+<title>Prezent Wielkanocny</title>
+</head>
+<body>
+<div class="panel">
+  <table>
+    <tr>
+      <td><img id="strzalka" src="images/strzalka.jpg" alt="strzalka"></td><td><h1>Witam w grze klikanie jajka!</h1></td>
+    </tr>
+  </table>
+<hr>
+<h2>Zasady gry:</h2>
+<section>
+  <p>Naciśnij start, aby zacząć</p>
+  <p>Kiedy gra się zacznie klikaj w jajka jak najszybciej</p>
+  <p>Pojawi się 20 jajek w różnych miejscach. Powodzenia!</p>
+</section>
+<div id="leaderboard"></div>
+<article class="button">
+    <button class="button"><a href="game.html">Start</a></button> 
+</article>
+
+<script>
+var leaderboardData = localStorage.getItem('leaderboard');
+var totalTime=0;
+if (leaderboardData) {
+  var leaderboard = JSON.parse(leaderboardData);
+  // Display leaderboard
+  var leaderboardHTML = '<h2>Leaderboard</h2><p>';
+  leaderboard.forEach((time, index) => {
+    leaderboardHTML += '<p class="leaderborad">Click #' + (index + 1) + ': ' + time.toFixed(2) + 's</p>';
+    totalTime = time+ totalTime;
+  });
+  leaderboardHTML += '</p>';
+  leaderboardHTML += '<h3>Total Time</h3>';
+  leaderboardHTML += '<p class="totalTime">' +totalTime+ '</p>';
+  document.getElementById('leaderboard').innerHTML = leaderboardHTML;
+} else {
+  document.getElementById('leaderboard').innerHTML = '<p>No leaderboard data available.</p>';
+}
+
+document.getElementById('strzalka').addEventListener('click', function() {
+  window.location.href = 'Wielkanoc.html';
+});
+</script>
+</div>
+</body>
+</html>
