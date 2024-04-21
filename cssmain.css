@@ -145,7 +145,8 @@ h2{
 }
 .tytulProjektu{
     font-size: 2rem;
-    padding: 2rem 0.5rem;
+    background-color: #36425f;
+    margin: 20px;
 }
 .code{
     color: #303841;
