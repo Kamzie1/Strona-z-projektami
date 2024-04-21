@@ -65,6 +65,6 @@ img {
 }
 
 .strzalka{
-  text-align: left;
+  width: 125px;
+  height: 135px;
 }
-td { border: 1px solid black; } 
