@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssStatki.css" rel="stylesheet"/>
+<title>Manual do gry w statki</title>
+</head>
+<body>
+<div class="panel">
+  <table>
+    <tr>
+      <td><img class="strzalka" id="strzalka" src="images/strzalka.jpg" alt="strzalka"></td>
+      <td><h1>Już nigdy nie przegrasz w grze statki!</h1></td>
+      <td><img class="settings" id="settings" src="images/settings.jpg" alt="settings"></td>
+    </tr>
+  </table>
+<hr>
+<section class="dane">
+    <form name="data">
+        <label for="strzal">strzał</label>
+        <input type="text" id="strzal" ><br>
+        <label for="trafienie">trafienie</label>
+        <input type="text" id="trafienie" ><br>
+        <label for="zatopiony">zatopiony</label>
+        <input type="text" id="zatopiony" ><br>
+        <button class="button" id="update">update</button> 
+    </form>
+</section>
+<section>
+  <div id="kill_count">
+    <div id="submarine"></div>
+    <div id="cruiser"></div>
+    <div id="battleship"></div>
+    <div id="aircraft"></div>
+  </div>
+</section>
+<section>
+  <div class="board">
+    <table id="gameBoard"></table>
+  </div>
+</section>
+<script>
+document.getElementById('strzalka').addEventListener('click', function() {
+  localStorage.removeItem("gameState");
+  window.location.href = '../main.html';
+});
+document.getElementById('settings').addEventListener('click', function() {
+  localStorage.removeItem("gameState");
+  window.location.href = 'statkiSettings.html';
+});
+
+let wielkosc=localStorage.getItem("wielkosc");;
+let submarine=localStorage.getItem("submarine");;
+let cruiser= localStorage.getItem("cruiser");;
+let battleship = localStorage.getItem("battleship");;
+let aircraft=localStorage.getItem("aircraft");;
+let zatopiony=true;
+let cells = [];
+
+document.getElementById('submarine').innerHTML='submarine: '+submarine;
+document.getElementById('cruiser').innerHTML='cruiser: '+cruiser;
+document.getElementById('battleship').innerHTML='battleship: '+battleship;
+document.getElementById('aircraft').innerHTML='aircraft: '+aircraft;
+
+
+const localStorageKey = 'gameState';
+
+function loadGameState() {
+  const savedState = localStorage.getItem(localStorageKey);
+  if (savedState) {
+    return JSON.parse(savedState);
+  } else {
+    return initializeEmptyArray(wielkosc);
+  }
+}
+
+function initializeEmptyArray(size) {
+  let array = new Array(size);
+  for (let i = 0; i < size; i++) {
+    array[i] = new Array(size);
+    for (let j = 0; j < size; j++) {
+      array[i][j] = 0;
+    }
+  }
+  return array;
+}
+
+function saveGameState(array) {
+  localStorage.setItem(localStorageKey, JSON.stringify(array));
+}
+
+let array = loadGameState();
+
+const table = document.getElementById('gameBoard');
+  table.innerHTML = '';
+
+  for (let i = 0; i < wielkosc; i++) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.textContent = String.fromCharCode(65 + i);
+    tr.appendChild(td);
+    for (let j = 0; j < wielkosc; j++) {
+      const td = document.createElement('td');
+      td.textContent = array[i][j];
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+
+  const tr = document.createElement('tr');
+  tr.appendChild(document.createElement('td')); 
+  for (let x = 1; x <= wielkosc; x++) {
+    const td = document.createElement('td');
+    td.textContent = x;
+    tr.appendChild(td);
+  }
+  table.appendChild(tr);
+
+function cell_to_num(a) {
+  let rows = a.charAt(0).charCodeAt(0) - 65; 
+  let columns = parseInt(a.substring(1)) - 1;
+  return { rows, columns };
+}
+
+function num_to_cell(rows, columns) {
+  var cell = String.fromCharCode(rows + 65) + (columns + 1).toString();
+  return cell;
+}
+
+function count(rows, amount_of_ship, length_of_ship) {
+  if(length_of_ship==2)
+  {
+    for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < rows; j++) {
+      if (array[i][j] == -2 || array[i][j] == -1) continue;
+      if (i - 1 >= 0 && !cells.includes(num_to_cell(i - 1, j)) && array[i - 1][j] != -2 && array[i - 1][j] != -1) {
+        array[i][j] += 1*amount_of_ship;
+        array[i - 1][j] += 1*amount_of_ship;
+      }
+      if (i + 1 < rows && !cells.includes(num_to_cell(i + 1, j)) && array[i + 1][j] != -2 && array[i + 1][j] != -1) {
+        array[i][j] += 1*amount_of_ship;
+        array[i + 1][j] += 1*amount_of_ship;
+      }
+      if (j - 1 >= 0 && !cells.includes(num_to_cell(i, j-1))&& array[i][j - 1] != -2 && array[i][j - 1] != -1) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j - 1] += 1*amount_of_ship;
+      }
+      if (j + 1 < rows && !cells.includes(num_to_cell(i, j+1))&& array[i][j + 1] != -2 && array[i][j + 1] != -1) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j + 1] += 1*amount_of_ship;
+      }
+      cells.push(num_to_cell(i, j));
+    }
+  }
+  }
+  else if(length_of_ship==3)
+  {
+    for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < rows; j++) {
+      if (array[i][j] == -2 || array[i][j] == -1) continue;
+      if (i - 1 >= 0 && i - 2 >= 0 && !cells.includes(num_to_cell(i - 2, j)) && array[i - 1][j] >=0 && array[i - 2][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i - 1][j] += 1*amount_of_ship;
+        array[i - 2][j] += 1*amount_of_ship;
+      }
+      if (i + 1 < rows && i + 2 < rows && !cells.includes(num_to_cell(i + 2, j)) && array[i + 1][j] >=0 && array[i + 2][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i + 1][j] += 1*amount_of_ship;
+        array[i + 2][j] += 1*amount_of_ship;
+      }
+      if (j - 1 >= 0 && j-2>=0 && !cells.includes(num_to_cell(i, j-2))&& array[i][j - 1] >=0 && array[i][j - 2] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j - 1] += 1*amount_of_ship;
+        array[i][j - 2] += 1*amount_of_ship;
+      }
+      if (j + 1 < rows && j+2 < rows && !cells.includes(num_to_cell(i, j+2))&& array[i][j + 1] >=0 && array[i][j + 2] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j + 1] += 1*amount_of_ship;
+        array[i][j + 2] += 1*amount_of_ship;
+      }
+      cells.push(num_to_cell(i, j));
+    }
+  }
+  }
+  else if(length_of_ship==4)
+  {
+    for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < rows; j++) {
+      if (array[i][j] == -2 || array[i][j] == -1) continue;
+      if (i - 1 >= 0 && i - 2 >= 0 && i - 3 >= 0 && !cells.includes(num_to_cell(i - 3, j)) && array[i - 1][j] >=0 && array[i - 2][j] >=0 && array[i - 3][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i - 1][j] += 1*amount_of_ship;
+        array[i - 2][j] += 1*amount_of_ship;
+        array[i - 3][j] += 1*amount_of_ship;
+      }
+      if (i + 1 < rows && i + 2 < rows && i + 3 < rows && !cells.includes(num_to_cell(i + 3, j)) && array[i + 1][j] >=0 && array[i + 2][j] >=0 && array[i + 3][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i + 1][j] += 1*amount_of_ship;
+        array[i + 2][j] += 1*amount_of_ship;
+        array[i + 3][j] += 1*amount_of_ship;
+      }
+      if (j - 1 >= 0 && j-2>=0 && j - 3 >= 0 && !cells.includes(num_to_cell(i, j-3))&& array[i][j - 1] >=0 && array[i][j - 2] >=0 && array[i][j - 3] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j - 1] += 1*amount_of_ship;
+        array[i][j - 2] += 1*amount_of_ship;
+        array[i][j - 3] += 1*amount_of_ship;
+      }
+      if (j + 1 < rows && j+2 < rows && j + 3 < rows && !cells.includes(num_to_cell(i, j+3))&& array[i][j + 1] >=0 && array[i][j + 2] >=0 && array[i][j + 3] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j + 1] += 1*amount_of_ship;
+        array[i][j + 2] += 1*amount_of_ship;
+        array[i][j + 3] += 1*amount_of_ship;
+      }
+      cells.push(num_to_cell(i, j));
+    }
+  }
+  }
+  else{
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < rows; j++) {
+      if (array[i][j] == -2 || array[i][j] == -1) continue;
+      if (i - 1 >= 0 && i - 2 >= 0 && i - 3 >= 0 && i - 4 >= 0 && !cells.includes(num_to_cell(i - 4, j)) && array[i - 1][j] >=0 && array[i - 2][j] >=0 && array[i - 3][j] >=0 && array[i - 4][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i - 1][j] += 1*amount_of_ship;
+      }
+      if (i + 1 < rows && i + 2 < rows && i + 3 < rows && i + 4 < rows && !cells.includes(num_to_cell(i + 4, j)) && array[i + 1][j] >=0 && array[i + 2][j] >=0 && array[i + 3][j] >=0 && array[i + 4][j] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i + 1][j] += 1*amount_of_ship;
+      }
+      if (j - 1 >= 0 && j-2>=0 && j - 3 >= 0 && j - 4 >= 0 && !cells.includes(num_to_cell(i, j-4))&& array[i][j - 1] >=0 && array[i][j - 2] >=0 && array[i][j - 3] >=0 && array[i][j - 4] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j - 1] += 1*amount_of_ship;
+      }
+      if (j + 1 < rows && j+2 < rows && j + 3 < rows && j + 4 < rows && !cells.includes(num_to_cell(i, j+4))&& array[i][j + 1] >=0 && array[i][j + 2] >=0 && array[i][j + 3] >=0 && array[i][j + 4] >=0) {
+        array[i][j] += 1*amount_of_ship;
+        array[i][j + 1] += 1*amount_of_ship;
+      }
+      cells.push(num_to_cell(i, j));
+    }
+  }
+  }
+  cells = [];
+}
+
+function fire(a, b, c) {
+  if (a) {
+    let coordinatesA = cell_to_num(a);
+    array[coordinatesA.rows][coordinatesA.columns] = -1;
+    if(submarine>0)
+      count(wielkosc, submarine, 2);
+    if(cruiser>0)
+      count(wielkosc, cruiser, 3);
+    if(battleship>0)
+      count(wielkosc, battleship, 4);
+    if(aircraft>0)
+      count(wielkosc, aircraft, 5);
+  }
+  if (b||c) {
+    let coordinatesB = cell_to_num(b);
+    array[coordinatesB.rows][coordinatesB.columns] = -2;
+    if (c!== '')
+    {
+    if(c==='submarine')
+    {
+      submarine -=1;
+      localStorage.setItem('submarine', submarine);
+    }
+
+    if(c==='cruiser')
+    {
+      cruiser -=1;
+      localStorage.setItem("cruiser", cruiser);
+    }
+      
+    if(c==='battleship')
+    {
+      battleship -=1;
+      localStorage.setItem("battleship", battleship);
+    }
+      
+    if(c==='aircraft')
+    {
+      aircraft -=1;
+      localStorage.setItem("aircraft", aircraft);
+    }
+      
+    if(submarine>0)
+      count(wielkosc, submarine, 2);
+    if(cruiser>0)
+      count(wielkosc, cruiser, 3);
+    if(battleship>0)
+      count(wielkosc, battleship, 4);
+    if(aircraft>0)
+      count(wielkosc, aircraft, 5);
+    }
+    else{
+      if(coordinatesB.rows+1< wielkosc && array[coordinatesB.rows+1][coordinatesB.columns] ==-2)
+        array[coordinatesB.rows-1][coordinatesB.columns] = 10;
+      else if(coordinatesB.rows-1>= 0 && array[coordinatesB.rows-1][coordinatesB.columns] ==-2)
+        array[coordinatesB.rows+1][coordinatesB.columns] = 10;
+      else if(coordinatesB.columns+1< wielkosc && array[coordinatesB.rows][coordinatesB.columns+1] ==-2)
+        array[coordinatesB.rows][coordinatesB.columns-1] = 10;
+      else if(coordinatesB.columns-1>=0 && array[coordinatesB.rows][coordinatesB.columns-1] ==-2)
+        array[coordinatesB.rows][coordinatesB.columns+1] = 10;
+      else{
+        if(coordinatesB.rows+1< wielkosc && array[coordinatesB.rows+1][coordinatesB.columns] >=0)
+        array[coordinatesB.rows+1][coordinatesB.columns] = 10;
+      if(coordinatesB.rows-1>= 0 && array[coordinatesB.rows-1][coordinatesB.columns] >=0)
+        array[coordinatesB.rows-1][coordinatesB.columns] = 10;
+      if(coordinatesB.columns+1< wielkosc && array[coordinatesB.rows][coordinatesB.columns+1] >=0)
+        array[coordinatesB.rows][coordinatesB.columns+1] = 10;
+      if(coordinatesB.columns-1>=0 && array[coordinatesB.rows][coordinatesB.columns-1] >=0)
+        array[coordinatesB.rows][coordinatesB.columns-1] = 10;
+      }
+    }
+    }
+  }
+
+function clear()
+{
+  for(let i=0;i<wielkosc;i++)
+  {
+    for(let j=0;j<wielkosc;j++)
+    {
+      if(array[i][j]>0)
+        array[i][j]=0;
+    }
+  }
+}
+
+if(submarine==0&&cruiser==0&&battleship==0&&aircraft==0)
+{
+  alert("wygrałeś!");
+  window.location.href = "statkiSettings.html";
+}
+
+document.getElementById('update').addEventListener('click', function() {
+  clear();
+  fire(document.getElementById('strzal').value, document.getElementById('trafienie').value, document.getElementById('zatopiony').value); 
+  //color();
+  saveGameState(array);
+});
+
+
+
+
+</script>
+</body>
+</html>

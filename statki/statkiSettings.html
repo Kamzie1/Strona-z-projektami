@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssStatki.css" rel="stylesheet"/>
+<title>Manual do gry w statki</title>
+</head>
+<body>
+<div class="panel">
+  <table>
+    <tr>
+      <td><img class="strzalka" id="strzalka" src="images/strzalka.jpg" alt="strzalka"></td><td><h1>Już nigdy nie przegrasz w grze statki!</h1></td>
+    </tr>
+  </table>
+<hr>
+<h1>Ustawienia</h1>
+<h2>Zasady gry:</h2>
+<section class="zasady">
+  <ul>
+    <ol><h4>Wprowadź dane.</h4></ol>
+    <ol><h4> Zaznacz gdzie strzeliłeś, a mapa pokaże ci mapę prawdopodobieństwa.</h4></ol>
+    <ol><h4> Strzelaj w największe części mapy, to tam zapewne ukrywa się statek wroga.</h4></ol>
+    <ol><h4>W zależności czy spudłowałeś, czyt trafiłeś, a może zniszczyłeś wpisz współrzędne w odpowiednie miejsce, a mapa się zaktualizuje.</h4></ol>
+    <ol><h4>-1 oznacza pudło, a -2 oznacza trafienie.</h4></ol>
+  </ul>
+</section>
+<section class="dane">
+    <form name = "data">
+        <label for="wielkosc">Wielkość mapy:</label>
+        <input type= "number" id = "wielkosc" value="10"><br>
+        <label for="submarine">submarine:</label>
+        <input type= "number" id = "submarine" value="2"><br>
+        <label for="cruiser">cruiser:</label>
+        <input type= "number" id = "cruiser" value="3"><br>
+        <label for="battleship">battleship:</label>
+        <input type= "number" id = "battleship" value="2"><br>
+        <label for="aircraft">aircraft:</label>
+        <input type= "number" id = "aircraft" value="1"><br>
+    </form>
+    <article class="button" id="prześlij">
+        <button class="button" id = "button">load</button> 
+    </article>
+</section>
+<script>
+var wielkosc, dwa, trzy, cztery, piec;
+document.getElementById('strzalka').addEventListener('click', function() {
+  window.location.href = '../main.html';
+});
+document.getElementById('button').addEventListener('click', function() {
+    wielkosc = document.getElementById('wielkosc').value;
+    submarine = document.getElementById('submarine').value;
+    cruiser = document.getElementById('cruiser').value;
+    battleship = document.getElementById('battleship').value;
+    aircraft = document.getElementById('aircraft').value;
+    localStorage.setItem("wielkosc", wielkosc);
+    localStorage.setItem("submarine", submarine);
+    localStorage.setItem("cruiser", cruiser);
+    localStorage.setItem("battleship", battleship);
+    localStorage.setItem("aircraft", aircraft);
+    window.location.href = 'statkiMain2.html';
+});
+
+
+</script>
+</div>
+</body>
+</html>
