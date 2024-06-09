@@ -20,6 +20,7 @@
     <form name="data">
         <label for="zatopiony">zatopiony</label>
         <select id="zatopiony">
+          <option value=''>wybierz typ</option>
           <option value="submarine">submarine</option>
           <option value="cruiser">cruiser</option>
           <option value="battleship">battleship</option>
@@ -115,13 +116,13 @@ const table = document.getElementById('gameBoard');
       td.onclick = function(event) {
         click(i, j, "strzal");
       };
-      td.ondblclick = function(event) {
-        click(i, j, "trafienie");
-      };
       td.oncontextmenu =function(event){
         event.preventDefault();
         var value = document.getElementById('zatopiony').value;
-        click(i, j, value);
+        if(value==='')
+          click(i, j, "trafienie");
+        else
+          click(i, j, value);         
       };
       tr.appendChild(td);
       }
