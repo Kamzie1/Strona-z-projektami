@@ -86,6 +86,8 @@ document.getElementById('button').addEventListener('click', function() {
     localStorage.setItem("cruiser", cruiser);
     localStorage.setItem("battleship", battleship);
     localStorage.setItem("aircraft", aircraft);
+    localStorage.removeItem("gameState");
+    localStorage.removeItem("trafieni");
     window.location.href = 'statkiMain.html';
 });
 
