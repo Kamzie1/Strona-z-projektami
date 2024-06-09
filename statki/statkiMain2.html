@@ -37,26 +37,35 @@
 </section>
 <section>
   <div class="board">
-    <table id="gameBoard"></table>
+    <table id="gameBoard">
+    </table>
   </div>
 </section>
 <script>
 document.getElementById('strzalka').addEventListener('click', function() {
   localStorage.removeItem("gameState");
+  localStorage.removeItem("trafieni");
   window.location.href = '../main.html';
 });
 document.getElementById('settings').addEventListener('click', function() {
   localStorage.removeItem("gameState");
+  localStorage.removeItem("trafieni");
   window.location.href = 'statkiSettings.html';
 });
 
-let wielkosc=localStorage.getItem("wielkosc");;
-let submarine=localStorage.getItem("submarine");;
-let cruiser= localStorage.getItem("cruiser");;
-let battleship = localStorage.getItem("battleship");;
-let aircraft=localStorage.getItem("aircraft");;
-let zatopiony=true;
+let wielkosc=localStorage.getItem("wielkosc");
+let submarine=localStorage.getItem("submarine");
+let cruiser= localStorage.getItem("cruiser");
+let battleship = localStorage.getItem("battleship");
+let aircraft=localStorage.getItem("aircraft");
+let zatopiony=false;
 let cells = [];
+let table_of_content =[];
+let trafieni =[];
+if(localStorage.getItem('table_of_content'))
+   table_of_content =JSON.parse(localStorage.getItem('table_of_content'));
+if(localStorage.getItem('trafieni'))
+   trafieni =JSON.parse(localStorage.getItem('trafieni'));
 
 document.getElementById('submarine').innerHTML='submarine: '+submarine;
 document.getElementById('cruiser').innerHTML='cruiser: '+cruiser;
@@ -90,6 +99,26 @@ function saveGameState(array) {
   localStorage.setItem(localStorageKey, JSON.stringify(array));
 }
 
+function color(array, i, j, table_of_content) {
+  const a = 255 / table_of_content.length;
+  
+  if (array[i][j] == -2) {
+    return 'red';
+  }
+  else if(array[i][j]<1) 
+    return'gray';
+  else {
+    table_of_content.sort((x, y) => x - y); 
+
+    for (let z = 0; z < table_of_content.length; z++) {
+      if (table_of_content[z] === array[i][j]) {
+        return `rgb(0, ${Math.round(a * (z + 1))}, 0)`; 
+      }
+    }
+  }
+  return 'gray';
+}
+
 let array = loadGameState();
 
 const table = document.getElementById('gameBoard');
@@ -102,6 +131,7 @@ const table = document.getElementById('gameBoard');
     tr.appendChild(td);
     for (let j = 0; j < wielkosc; j++) {
       const td = document.createElement('td');
+      td.style.backgroundColor = color(array, i, j, table_of_content);
       td.textContent = array[i][j];
       tr.appendChild(td);
     }
@@ -223,30 +253,18 @@ function count(rows, amount_of_ship, length_of_ship) {
       if (i - 1 >= 0 && i - 2 >= 0 && i - 3 >= 0 && i - 4 >= 0 && !cells.includes(num_to_cell(i - 4, j)) && array[i - 1][j] >=0 && array[i - 2][j] >=0 && array[i - 3][j] >=0 && array[i - 4][j] >=0) {
         array[i][j] += 1*amount_of_ship;
         array[i - 1][j] += 1*amount_of_ship;
-        array[i - 2][j] += 1*amount_of_ship;
-        array[i - 3][j] += 1*amount_of_ship;
-        array[i - 4][j] += 1*amount_of_ship;
       }
       if (i + 1 < rows && i + 2 < rows && i + 3 < rows && i + 4 < rows && !cells.includes(num_to_cell(i + 4, j)) && array[i + 1][j] >=0 && array[i + 2][j] >=0 && array[i + 3][j] >=0 && array[i + 4][j] >=0) {
         array[i][j] += 1*amount_of_ship;
         array[i + 1][j] += 1*amount_of_ship;
-        array[i + 2][j] += 1*amount_of_ship;
-        array[i + 3][j] += 1*amount_of_ship;
-        array[i + 4][j] += 1*amount_of_ship;
       }
       if (j - 1 >= 0 && j-2>=0 && j - 3 >= 0 && j - 4 >= 0 && !cells.includes(num_to_cell(i, j-4))&& array[i][j - 1] >=0 && array[i][j - 2] >=0 && array[i][j - 3] >=0 && array[i][j - 4] >=0) {
         array[i][j] += 1*amount_of_ship;
         array[i][j - 1] += 1*amount_of_ship;
-        array[i][j - 2] += 1*amount_of_ship;
-        array[i][j - 3] += 1*amount_of_ship;
-        array[i][j - 4] += 1*amount_of_ship;
       }
       if (j + 1 < rows && j+2 < rows && j + 3 < rows && j + 4 < rows && !cells.includes(num_to_cell(i, j+4))&& array[i][j + 1] >=0 && array[i][j + 2] >=0 && array[i][j + 3] >=0 && array[i][j + 4] >=0) {
         array[i][j] += 1*amount_of_ship;
         array[i][j + 1] += 1*amount_of_ship;
-        array[i][j + 2] += 1*amount_of_ship;
-        array[i][j + 3] += 1*amount_of_ship;
-        array[i][j + 4] += 1*amount_of_ship;
       }
       cells.push(num_to_cell(i, j));
     }
@@ -256,9 +274,18 @@ function count(rows, amount_of_ship, length_of_ship) {
 }
 
 function fire(a, b, c) {
-  if (a) {
-    let coordinatesA = cell_to_num(a);
-    array[coordinatesA.rows][coordinatesA.columns] = -1;
+  if(a)
+    {
+      let coordinatesA = cell_to_num(a);
+      array[coordinatesA.rows][coordinatesA.columns] = -1;
+    }
+  else if(b){
+      let coordinatesB = cell_to_num(b);
+      array[coordinatesB.rows][coordinatesB.columns] = -2;
+      trafieni.push(b);
+      localStorage.setItem('trafieni', JSON.stringify(trafieni));
+    }
+  if (trafieni.length==0) {
     if(submarine>0)
       count(wielkosc, submarine, 2);
     if(cruiser>0)
@@ -268,9 +295,7 @@ function fire(a, b, c) {
     if(aircraft>0)
       count(wielkosc, aircraft, 5);
   }
-  if (b||c) {
-    let coordinatesB = cell_to_num(b);
-    array[coordinatesB.rows][coordinatesB.columns] = -2;
+  if (trafieni.length>0) {
     if (c!== '')
     {
     if(c==='submarine')
@@ -296,7 +321,9 @@ function fire(a, b, c) {
       aircraft -=1;
       localStorage.setItem("aircraft", aircraft);
     }
-      
+    trafieni=[];
+    localStorage.setItem('trafieni', JSON.stringify(trafieni));
+
     if(submarine>0)
       count(wielkosc, submarine, 2);
     if(cruiser>0)
@@ -304,30 +331,275 @@ function fire(a, b, c) {
     if(battleship>0)
       count(wielkosc, battleship, 4);
     if(aircraft>0)
+    {
       count(wielkosc, aircraft, 5);
+    } 
+
     }
     else{
-      if(coordinatesB.rows+1< wielkosc && array[coordinatesB.rows+1][coordinatesB.columns] ==-2)
-        array[coordinatesB.rows-1][coordinatesB.columns] = 10;
-      else if(coordinatesB.rows-1>= 0 && array[coordinatesB.rows-1][coordinatesB.columns] ==-2)
-        array[coordinatesB.rows+1][coordinatesB.columns] = 10;
-      else if(coordinatesB.columns+1< wielkosc && array[coordinatesB.rows][coordinatesB.columns+1] ==-2)
-        array[coordinatesB.rows][coordinatesB.columns-1] = 10;
-      else if(coordinatesB.columns-1>=0 && array[coordinatesB.rows][coordinatesB.columns-1] ==-2)
-        array[coordinatesB.rows][coordinatesB.columns+1] = 10;
-      else{
-        if(coordinatesB.rows+1< wielkosc && array[coordinatesB.rows+1][coordinatesB.columns] >=0)
-        array[coordinatesB.rows+1][coordinatesB.columns] = 10;
-      if(coordinatesB.rows-1>= 0 && array[coordinatesB.rows-1][coordinatesB.columns] >=0)
-        array[coordinatesB.rows-1][coordinatesB.columns] = 10;
-      if(coordinatesB.columns+1< wielkosc && array[coordinatesB.rows][coordinatesB.columns+1] >=0)
-        array[coordinatesB.rows][coordinatesB.columns+1] = 10;
-      if(coordinatesB.columns-1>=0 && array[coordinatesB.rows][coordinatesB.columns-1] >=0)
-        array[coordinatesB.rows][coordinatesB.columns-1] = 10;
-      }
+      trafiony();
     }
     }
+     
+    }
+
+function trafiony()
+{
+  for(let i=0;i<trafieni.length;i++)
+  {
+    tarfiony_prawdopodobienstwo(trafieni[i]);
   }
+}
+
+function tarfiony_prawdopodobienstwo(a)
+{
+  let coordinates = cell_to_num(a);
+  if(submarine>0)
+  {
+    if(coordinates.rows+1<wielkosc&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-2)
+      array[coordinates.rows+1][coordinates.columns]+=1*submarine;
+    if(coordinates.rows-1>=0&&array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows-1][coordinates.columns]!=-2)
+      array[coordinates.rows-1][coordinates.columns]+=1*submarine;
+    if(coordinates.columns+1<wielkosc&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-2)
+      array[coordinates.rows][coordinates.columns+1]+=1*submarine;
+    if(coordinates.columns-1>=0&&array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns-1]!=-2)
+      array[coordinates.rows][coordinates.columns-1]+=1*submarine;
+  }
+  if(cruiser>0)
+  {
+    if(coordinates.rows+1<wielkosc && coordinates.rows+2<wielkosc && array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*cruiser;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+2][coordinates.columns]+=1*cruiser;
+    }
+    if(coordinates.rows-1>=0 && coordinates.rows-2>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*cruiser;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*cruiser;
+    }    
+    if(coordinates.columns+1<wielkosc && coordinates.columns+2<wielkosc && array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*cruiser;
+      if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*cruiser;
+    }    
+    if(coordinates.columns-1>= 0&& coordinates.columns-2>=0 && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*cruiser;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*cruiser;
+    } 
+    if(coordinates.columns-1>= 0&& coordinates.columns+1<wielkosc && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*cruiser;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*cruiser;
+    } 
+    if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*cruiser;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*cruiser;
+    } 
+}
+  if(battleship>0)
+{
+  if(coordinates.rows+1<wielkosc && coordinates.rows+2&& coordinates.rows+3<wielkosc && array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1&&array[coordinates.rows+3][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+3][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows+3][coordinates.columns]!=-2)
+        array[coordinates.rows+3][coordinates.columns]+=1*battleship;
+    }
+  if(coordinates.rows-1>=0 && coordinates.rows-2>=0&& coordinates.rows-3>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1&&array[coordinates.rows-3][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows-3][coordinates.columns]!=-2)
+        array[coordinates.rows-3][coordinates.columns]+=1*battleship;
+    } 
+  if(coordinates.columns+1<wielkosc && coordinates.columns+2<wielkosc &&coordinates.columns+3<wielkosc && array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1&&array[coordinates.rows][coordinates.columns+3]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns+3]!=-2)
+        array[coordinates.rows][coordinates.columns+3]+=1*battleship;
+    }    
+  if(coordinates.columns-1>= 0&& coordinates.columns-2>=0 && coordinates.columns-3>=0 && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1&&array[coordinates.rows][coordinates.columns-3]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns-3]!=-2)
+        array[coordinates.rows][coordinates.columns-3]+=1*battleship;
+    } 
+  if(coordinates.columns-1>= 0&& coordinates.columns+1&& coordinates.columns+2<wielkosc && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*battleship;
+    } 
+  if(coordinates.columns-1>= 0&& coordinates.columns+1&& coordinates.columns-2>=0 && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*battleship;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*battleship;
+    } 
+  if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc&& coordinates.rows+2<wielkosc && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+2][coordinates.columns]+=1*battleship;
+    } 
+  if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc&& coordinates.rows-2>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*battleship;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*battleship;
+    } 
+}
+  if(aircraft>0)
+{
+  if(coordinates.rows+1<wielkosc && coordinates.rows+2&& coordinates.rows+3<wielkosc&&coordinates.rows+4<wielkosc && array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1&&array[coordinates.rows+3][coordinates.columns]!=-1&&array[coordinates.rows+4][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+3][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+3][coordinates.columns]!=-2)
+        array[coordinates.rows+3][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+4][coordinates.columns]!=-2)
+        array[coordinates.rows+4][coordinates.columns]+=1*aircraft;
+    }
+  if(coordinates.rows-1>=0 && coordinates.rows-2>=0&& coordinates.rows-3>=0 &&coordinates.rows-4>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1&&array[coordinates.rows-3][coordinates.columns]!=-1&&array[coordinates.rows-4][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-3][coordinates.columns]!=-2)
+        array[coordinates.rows-3][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-4][coordinates.columns]!=-2)
+        array[coordinates.rows-4][coordinates.columns]+=1*aircraft;
+    } 
+  if(coordinates.columns+1<wielkosc && coordinates.columns+2<wielkosc &&coordinates.columns+3<wielkosc &&coordinates.columns+4<wielkosc && array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1&&array[coordinates.rows][coordinates.columns+3]!=-1&&array[coordinates.rows][coordinates.columns+4]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+3]!=-2)
+        array[coordinates.rows][coordinates.columns+3]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+4]!=-2)
+        array[coordinates.rows][coordinates.columns+4]+=1*aircraft;
+    }  
+  if(coordinates.columns-1>= 0&& coordinates.columns-2>=0 && coordinates.columns-3>=0 &&coordinates.columns-4>=0 && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1&&array[coordinates.rows][coordinates.columns-3]!=-1&&array[coordinates.rows][coordinates.columns-4]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-3]!=-2)
+        array[coordinates.rows][coordinates.columns-3]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-4]!=-2)
+        array[coordinates.rows][coordinates.columns-4]+=1*aircraft;
+    } 
+  if(coordinates.columns-1>= 0&& coordinates.columns+1&& coordinates.columns+2<wielkosc &&coordinates.columns+3<wielkosc && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1&&array[coordinates.rows][coordinates.columns+3]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+3]!=-2)
+        array[coordinates.rows][coordinates.columns+3]+=1*aircraft;
+    } 
+  if(coordinates.columns-1>= 0&& coordinates.columns+1&& coordinates.columns-2>=0 && coordinates.columns+2&& array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1&&array[coordinates.rows][coordinates.columns+2]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*aircraft;
+        if(array[coordinates.rows][coordinates.columns+2]!=-2)
+        array[coordinates.rows][coordinates.columns+2]+=1*aircraft;
+    } 
+  if(coordinates.columns-1>= 0&& coordinates.columns+1&& coordinates.columns-2>=0 &&coordinates.columns-3>=0 && array[coordinates.rows][coordinates.columns-1]!=-1&&array[coordinates.rows][coordinates.columns+1]!=-1&&array[coordinates.rows][coordinates.columns-2]!=-1&&array[coordinates.rows][coordinates.columns-3]!=-1)
+    {
+      if(array[coordinates.rows][coordinates.columns-1]!=-2)
+        array[coordinates.rows][coordinates.columns-1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns+1]!=-2)
+        array[coordinates.rows][coordinates.columns+1]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-2]!=-2)
+        array[coordinates.rows][coordinates.columns-2]+=1*aircraft;
+      if(array[coordinates.rows][coordinates.columns-3]!=-2)
+        array[coordinates.rows][coordinates.columns-3]+=1*aircraft
+    } 
+  if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc&& coordinates.rows+2<wielkosc &&coordinates.rows+3<wielkosc && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1&&array[coordinates.rows+3][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+2][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+3][coordinates.columns]!=-2)
+        array[coordinates.rows+3][coordinates.columns]+=1*aircraft;
+    } 
+  if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc&& coordinates.rows+2<wielkosc &&coordinates.rows-2>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows+2][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows+2][coordinates.columns]!=-2)
+        array[coordinates.rows+2][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*aircraft;
+    } 
+  if(coordinates.rows-1>= 0&& coordinates.rows+1<wielkosc&& coordinates.rows-2>=0 &&coordinates.rows-3>=0 && array[coordinates.rows-1][coordinates.columns]!=-1&&array[coordinates.rows+1][coordinates.columns]!=-1&&array[coordinates.rows-2][coordinates.columns]!=-1&&array[coordinates.rows-3][coordinates.columns]!=-1)
+    {
+      if(array[coordinates.rows+1][coordinates.columns]!=-2)
+        array[coordinates.rows+1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-1][coordinates.columns]!=-2)
+        array[coordinates.rows-1][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-2][coordinates.columns]!=-2)
+        array[coordinates.rows-2][coordinates.columns]+=1*aircraft;
+      if(array[coordinates.rows-3][coordinates.columns]!=-2)
+        array[coordinates.rows-3][coordinates.columns]+=1*aircraft;
+    }   
+}
+}
+
 
 function clear()
 {
@@ -347,11 +619,25 @@ if(submarine==0&&cruiser==0&&battleship==0&&aircraft==0)
   window.location.href = "statkiSettings.html";
 }
 
+
+
 document.getElementById('update').addEventListener('click', function() {
   clear();
   fire(document.getElementById('strzal').value, document.getElementById('trafienie').value, document.getElementById('zatopiony').value); 
-  //color();
   saveGameState(array);
+  table_of_content =[];
+  for(let i=0;i<wielkosc;i++)
+  {
+    for(let j=0;j<wielkosc;j++)
+    {
+      if(!table_of_content.includes(array[i][j])&& array[i][j]>0)
+      {
+        table_of_content.push(array[i][j]);
+      }
+    }
+  }
+  localStorage.setItem('table_of_content', JSON.stringify(table_of_content));
+
 });
 
 

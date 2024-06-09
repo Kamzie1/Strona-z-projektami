@@ -20,29 +20,57 @@
   <ul>
     <ol><h4>Wprowadź dane.</h4></ol>
     <ol><h4> Zaznacz gdzie strzeliłeś, a mapa pokaże ci mapę prawdopodobieństwa.</h4></ol>
-    <ol><h4> Strzelaj w największe części mapy, to tam zapewne ukrywa się statek wroga.</h4></ol>
-    <ol><h4>W zależności czy spudłowałeś, czyt trafiłeś, a może zniszczyłeś wpisz współrzędne w odpowiednie miejsce, a mapa się zaktualizuje.</h4></ol>
-    <ol><h4>-1 oznacza pudło, a -2 oznacza trafienie.</h4></ol>
+    <ol><h4> Kliknięcie oznacza pudło, podwójne oznacza trafienie, a kliknięcie prawym przyciskiem oznacza trafiony zatopiony.</h4></ol>
+    <ol><h4> Strzelaj w najbardziej zielone części mapy, to tam zapewne ukrywa się statek wroga.</h4></ol>
+    <ol><h4>Przed zatopieniem wpisz typ statku jaki zniszczyłeś.</h4></ol>
+    <ol><h4>Szary oznacza pudło, a czerwony oznacza trafienie.</h4></ol>
   </ul>
 </section>
 <section class="dane">
     <form name = "data">
-        <label for="wielkosc">Wielkość mapy:</label>
-        <input type= "number" id = "wielkosc" value="10"><br>
-        <label for="submarine">submarine:</label>
-        <input type= "number" id = "submarine" value="2"><br>
-        <label for="cruiser">cruiser:</label>
-        <input type= "number" id = "cruiser" value="3"><br>
-        <label for="battleship">battleship:</label>
-        <input type= "number" id = "battleship" value="2"><br>
-        <label for="aircraft">aircraft:</label>
-        <input type= "number" id = "aircraft" value="1"><br>
+      <label for="wielkosc">Wielkość mapy:</label>
+      <input type="range" id="wielkosc" class="range-input" min="2" max="10" value="5" step="1" />
+      <span id="wielkoscValue" class="value-display">5</span><br>
+    
+      <label for="submarine">Submarine:</label>
+      <input type="range" id="submarine" class="range-input" min="0" max="5" value="1" step="1" />
+      <span id="submarineValue" class="value-display">1</span><br>
+    
+      <label for="cruiser">Cruiser:</label>
+      <input type="range" id="cruiser" class="range-input" min="0" max="5" value="1" step="1" />
+      <span id="cruiserValue" class="value-display">1</span><br>
+    
+      <label for="battleship">Battleship:</label>
+      <input type="range" id="battleship" class="range-input" min="0" max="5" value="0" step="1" />
+      <span id="battleshipValue" class="value-display">0</span><br>
+    
+      <label for="aircraft">Aircraft:</label>
+      <input type="range" id="aircraft" class="range-input" min="0" max="5" value="0" step="1" />
+      <span id="aircraftValue" class="value-display">0</span><br>
     </form>
     <article class="button" id="prześlij">
         <button class="button" id = "button">load</button> 
     </article>
 </section>
 <script>
+ function updateValue(inputId, displayId) {
+      const rangeInput = document.getElementById(inputId);
+      const valueDisplay = document.getElementById(displayId);
+      valueDisplay.textContent = rangeInput.value;
+    }
+    const rangeInputs = [
+      { id: 'wielkosc', displayId: 'wielkoscValue' },
+      { id: 'submarine', displayId: 'submarineValue' },
+      { id: 'cruiser', displayId: 'cruiserValue' },
+      { id: 'battleship', displayId: 'battleshipValue' },
+      { id: 'aircraft', displayId: 'aircraftValue' },
+    ];
+
+    rangeInputs.forEach(input => {
+      const rangeInput = document.getElementById(input.id);
+      rangeInput.addEventListener('input', () => updateValue(input.id, input.displayId));
+      updateValue(input.id, input.displayId);
+    });
 var wielkosc, dwa, trzy, cztery, piec;
 document.getElementById('strzalka').addEventListener('click', function() {
   window.location.href = '../main.html';
@@ -58,7 +86,7 @@ document.getElementById('button').addEventListener('click', function() {
     localStorage.setItem("cruiser", cruiser);
     localStorage.setItem("battleship", battleship);
     localStorage.setItem("aircraft", aircraft);
-    window.location.href = 'statkiMain2.html';
+    window.location.href = 'statkiMain.html';
 });
 
 
