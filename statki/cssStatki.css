@@ -65,22 +65,22 @@ body {
     text-align: center;
     margin: 5px;
 } 
-.board{
+.mapa{
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
-#gameBoard td {
+#mapa td {
   border: solid;
   width: 30px;
   height: 30px;
   text-align: center;
   vertical-align: middle;
 }
-#gameBoard table{
+#mapa table{
   border-collapse: collapse;
 }
-.kill_count{
+.lista_statkow{
   text-align: left;
   margin: 0px;
   }
