@@ -29,7 +29,7 @@
     </form>
 </section>
 <section>
-  <div class="kill_count">
+  <div class="lista_statkow">
     <div id="submarine"></div>
     <div id="cruiser"></div>
     <div id="battleship"></div>
@@ -37,22 +37,24 @@
   </div>
 </section>
 <section>
-  <div class="board">
-    <table id="gameBoard"></table>
+  <div class="mapa">
+    <table id="mapa"></table>
   </div>
 </section>
 <script>
 
+//mechanika poruszania się między stronami
+
 document.getElementById('strzalka').addEventListener('click', function() {
-  localStorage.removeItem("gameState");
-  localStorage.removeItem("trafieni");
+  usunStanGry();
   window.location.href = '../main.html';
 });
 document.getElementById('settings').addEventListener('click', function() {
-  localStorage.removeItem("gameState");
-  localStorage.removeItem("trafieni");
+  usunStanGry();
   window.location.href = 'statkiSettings.html';
 });
+
+//deklaracja zmiennych
 
 let wielkosc=localStorage.getItem("wielkosc");
 let submarine=localStorage.getItem("submarine");
@@ -60,48 +62,43 @@ let cruiser= localStorage.getItem("cruiser");
 let battleship = localStorage.getItem("battleship");
 let aircraft=localStorage.getItem("aircraft");
 let cells = [];
-let table_of_content =[];
+let tablica_wartosci =[];
 let trafieni =[];
+let array=[];
 
-if(localStorage.getItem('table_of_content'))
-   table_of_content =JSON.parse(localStorage.getItem('table_of_content'));
+if(localStorage.getItem('tablica_wartosci'))
+  tablica_wartosci =JSON.parse(localStorage.getItem('tablica_wartosci'));
 if(localStorage.getItem('trafieni'))
    trafieni =JSON.parse(localStorage.getItem('trafieni'));
+if (localStorage.getItem('stanGry')) {
+  array= JSON.parse(localStorage.getItem('stanGry'))
+}
+else {
+  stworz_tablice(wielkosc);
+}
 
 document.getElementById('submarine').innerHTML='submarine: '+submarine;
 document.getElementById('cruiser').innerHTML='cruiser: '+cruiser;
 document.getElementById('battleship').innerHTML='battleship: '+battleship;
 document.getElementById('aircraft').innerHTML='aircraft: '+aircraft;
 
-const localStorageKey = 'gameState';
 
-function loadGameState() {
-  const savedState = localStorage.getItem(localStorageKey);
-  if (savedState) {
-    return JSON.parse(savedState);
-  } else {
-    return initializeEmptyArray(wielkosc);
-  }
-}
 
-function initializeEmptyArray(size) {
-  let array = new Array(size);
+function stworz_tablice(size) {
+  array = new Array(size);
   for (let i = 0; i < size; i++) {
     array[i] = new Array(size);
     for (let j = 0; j < size; j++) {
       array[i][j] = 0;
     }
   }
-  return array;
+  pudlo();
+  utworz_tablice_wartosci();//policz dla startu
 }
 
-function saveGameState(array) {
-  localStorage.setItem(localStorageKey, JSON.stringify(array));
-}
+//utworzenie mapy 
 
-let array = loadGameState();
-
-const table = document.getElementById('gameBoard');
+const table = document.getElementById('mapa');
   table.innerHTML = '';
 
   for (let i = 0; i < wielkosc; i++) {
@@ -111,18 +108,18 @@ const table = document.getElementById('gameBoard');
     tr.appendChild(td);
     for (let j = 0; j < wielkosc; j++) {
       const td = document.createElement('td');
-      td.style.backgroundColor = color(array, i, j, table_of_content);
+      td.style.backgroundColor = color(array, i, j, tablica_wartosci);
       td.textContent = array[i][j];
       td.onclick = function(event) {
         click(i, j, "strzal");
       };
       td.oncontextmenu =function(event){
         event.preventDefault();
-        var value = document.getElementById('zatopiony').value;
-        if(value==='')
+        let zatopiony_statek = document.getElementById('zatopiony').value;
+        if(zatopiony_statek==='')
           click(i, j, "trafienie");
         else
-          click(i, j, value);         
+          click(i, j, zatopiony_statek);         
       };
       tr.appendChild(td);
       }
@@ -138,68 +135,123 @@ const table = document.getElementById('gameBoard');
   }
   table.appendChild(tr);
 
+//funkcja do zamiany komórki na wartości liczbowe
+
 function cell_to_num(a) {
   let rows = a.charAt(0).charCodeAt(0) - 65; 
   let columns = parseInt(a.substring(1)) - 1;
   return { rows, columns };
 }
 
+//funkcja do zamiany liczb na komórkę
+
 function num_to_cell(rows, columns) {
   var cell = String.fromCharCode(rows + 65) + (columns + 1).toString();
   return cell;
 }
 
-function color(array, i, j, table_of_content) {
-  const a = 255 / table_of_content.length;
+//funkcja do nadania koloru w zależności od ilości elementów w tablicy_wartosci
+
+function pudlo()
+{
+  if(submarine>0)
+      count(wielkosc, submarine, 2);
+  if(cruiser>0)
+      count(wielkosc, cruiser, 3);
+  if(battleship>0)
+      count(wielkosc, battleship, 4);
+  if(aircraft>0)
+      count(wielkosc, aircraft, 5);
+}
+
+function color(array, i, j, tablica_wartosci) {
+  const a = 255 / tablica_wartosci.length; //liczenie skali
   
   if (array[i][j] == -2) {
-    return 'red';
+    return 'red'; //trafiony
   }
   else if(array[i][j]<1) 
-    return'gray';
+    return'gray'; //pudlo lub bez możliwości 
   else {
-    table_of_content.sort((x, y) => x - y); 
+    tablica_wartosci.sort((x, y) => x - y); 
 
-    for (let z = 0; z < table_of_content.length; z++) {
-      if (table_of_content[z] === array[i][j]) {
-        return `rgb(0, ${Math.round(a * (z + 1))}, 0)`; 
+    for (let z = 0; z < tablica_wartosci.length; z++) {
+      if (tablica_wartosci[z] === array[i][j]) {
+        return `rgb(0, ${Math.round(a * (z + 1))}, 0)`; //skala zielonego w zależności od wilekosci liczby
       }
     }
   }
-  return 'gray';
+  return 'gray'; //automatycznie szary
 }
 
-function click(rows, columns, type)
+function click(rows, columns, type) //operacje po kliknięciu
 {
-  clear();
-  if(type==='strzal')
+  clear(); //wyczyszcza tablcę wartości prawdopodobieństwa
+  if(type==='strzal') //jeżeli pudlo
   {
     array[rows][columns] = -1; 
-    if(trafieni.length==0)
-    {
-    if(submarine>0)
-      count(wielkosc, submarine, 2);
-    if(cruiser>0)
-      count(wielkosc, cruiser, 3);
-    if(battleship>0)
-      count(wielkosc, battleship, 4);
-    if(aircraft>0)
-      count(wielkosc, aircraft, 5);
-    }
+    if(trafieni.length==0) //jezewli nie ma tyrafionego i niezatopionego to licz normalnie
+      pudlo(); //akcja dla braku trafionego
     else
-      trafiony();
+      trafiony(); //jeżeli jest jakiś trafiony nie zatopiony to licz prawdopodobieństwo ale tak, że statki są tylko w jakiejś części w miejscu trafionym
   }
-  else if(type ==='trafienie')
+  else if(type ==='trafienie') //jeżeli trafienie to licz jak do trafionych
   {
     array[rows][columns] = -2;
-    trafieni.push(num_to_cell(rows, columns));
+    trafieni.push(num_to_cell(rows, columns)); //przechowuję tablicę z komórkami trafionymi
     localStorage.setItem("trafieni", JSON.stringify(trafieni));
     trafiony();
   }
-  else
+  else //jeżeli zatopiony to odejmij z listy statków
   {
     array[rows][columns] = -2;
-    if(type==='submarine')
+    trafieni.push(num_to_cell(rows, columns)); //przechowuję tablicę z komórkami trafionymi
+    localStorage.setItem("trafieni", JSON.stringify(trafieni));
+    listaStatkow_uaktualnij(type);
+    erease(type);//wyszyść trafionych, ponieważ zatopiłeś statek
+    trafieni = JSON.parse(localStorage.getItem('trafieni'));
+    if(trafieni.length==0) //jezewli nie ma tyrafionego i niezatopionego to licz normalnie
+      pudlo(); //akcja dla braku trafionego
+    else
+      trafiony();//jeżeli jest jakiś trafiony nie zatopiony to licz prawdopodobieństwo ale tak, że statki są tylko w jakiejś części w miejscu trafionym
+    
+  }
+  localStorage.setItem('stanGry', JSON.stringify(array)); //zapisz mapę
+  utworz_tablice_wartosci();
+  location.reload();//odśwież
+  
+}
+
+function erease(type) {
+  let dl_statku;
+  let trafieni = JSON.parse(localStorage.getItem('trafieni')) || [];
+
+  if (type === 'submarine') {
+    dl_statku = 2;
+  } else if (type === 'cruiser') {
+    dl_statku = 3;
+  } else if (type === 'battleship') {
+    dl_statku = 4;
+  } else if (type === 'aircraft') {
+    dl_statku = 5;
+  } else {
+    trafieni = []; 
+  }
+
+  if (dl_statku !== undefined) {
+    for (let i = 0; i < dl_statku; i++) {
+      if (trafieni.length > 0) {
+        trafieni.pop();
+      }
+    }
+  }
+
+  localStorage.setItem('trafieni', JSON.stringify(trafieni));
+}
+
+function listaStatkow_uaktualnij(type)//uaktualnia liste istniejących statków
+{
+  if(type==='submarine')
     {
       submarine -=1;
       localStorage.setItem('submarine', submarine);
@@ -222,50 +274,39 @@ function click(rows, columns, type)
       aircraft -=1;
       localStorage.setItem("aircraft", aircraft);
     }
-    trafieni=[];
-    localStorage.setItem('trafieni', JSON.stringify(trafieni));
-    if(trafieni.length==0)
-    {
-      if(submarine>0)
-        count(wielkosc, submarine, 2);
-      if(cruiser>0)
-        count(wielkosc, cruiser, 3);
-      if(battleship>0)
-        count(wielkosc, battleship, 4);
-      if(aircraft>0)
-        count(wielkosc, aircraft, 5);
-    }
-    else
-      trafiony();
-    
-  }
-  saveGameState(array);
-  table_of_content =[];
+}
+
+if(submarine==0&&cruiser==0&&battleship==0&&aircraft==0) //jeżeli nie ma już statków to wygrałeś
+{
+  alert("wygrałeś!");
+  usunStanGry();
+  window.location.href = "statkiSettings.html";
+}
+
+function utworz_tablice_wartosci() //dodaj do tablicy wszystkie, nie powtarzające się, wartości(bez powtórek) 
+{
+  tablica_wartosci =[]; 
   for(let i=0;i<wielkosc;i++)
   {
     for(let j=0;j<wielkosc;j++)
     {
-      if(!table_of_content.includes(array[i][j])&& array[i][j]>0)
+      if(!tablica_wartosci.includes(array[i][j])&& array[i][j]>0)
       {
-        table_of_content.push(array[i][j]);
+        tablica_wartosci.push(array[i][j]);
       }
     }
   }
-  localStorage.setItem('table_of_content', JSON.stringify(table_of_content));
-  location.reload();
-  
+  localStorage.setItem('tablica_wartosci', JSON.stringify(tablica_wartosci));
 }
 
-if(submarine==0&&cruiser==0&&battleship==0&&aircraft==0)
+function usunStanGry()//usuwa stan gry
 {
-  alert("wygrałeś!");
   localStorage.removeItem("gameState");
   localStorage.removeItem("trafieni");
-  window.location.href = "statkiSettings.html";
+  localStorage.removeItem("tablica_wartosci");
 }
 
-
-function clear()
+function clear()//wyczyszcza tablice główną, ale tylko z wartości różnyuch od -1 i -2(czyli tych oznaczających prawdopodobieństwo)
 {
   for(let i=0;i<wielkosc;i++)
   {
@@ -277,7 +318,8 @@ function clear()
   }
 }
 
-function count(rows, amount_of_ship, length_of_ship) {
+function count(rows, amount_of_ship, length_of_ship) //liczy prawdopodobieństwo dla podanego typu i liczby statków
+{
   if(length_of_ship==2)
   {
     for (let i = 0; i < rows; i++) {
@@ -390,10 +432,10 @@ function count(rows, amount_of_ship, length_of_ship) {
   }
   }
   cells = [];
-  saveGameState(array);
+  localStorage.setItem('stanGry', JSON.stringify(array));
 }
 
-function trafiony_prawdopodobienstwo(a)
+function trafiony_prawdopodobienstwo(a)//liczy prawdopodobieństwo dla punktu, tak, aby każde możliwe położenie statku zawirało w sobie punkt podany
 {
   let coordinates = cell_to_num(a);
   if(submarine>0)
@@ -640,10 +682,10 @@ function trafiony_prawdopodobienstwo(a)
         array[coordinates.rows-3][coordinates.columns]+=1*aircraft;
     }   
 }
-saveGameState(array);
+localStorage.setItem('stanGry', JSON.stringify(array));
 }
 
-function trafiony()
+function trafiony()//wykonuje operacje liczenia prawdopodobieństwa dla trafienia
 {
   for(let i=0;i<trafieni.length;i++)
   {
