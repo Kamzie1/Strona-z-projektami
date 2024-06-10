@@ -29,7 +29,6 @@
 var leaderboardData = localStorage.getItem('eggs');
 if (leaderboardData) {
   var leaderboard = JSON.parse(leaderboardData);
-  // Display leaderboard
   var leaderboardHTML = '<h2>Leaderboard</h2><div class="leaderboard">'+leaderboard+'</div>';
   document.getElementById('leaderboard').innerHTML = leaderboardHTML;
 } else {
