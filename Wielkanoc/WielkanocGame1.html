@@ -55,13 +55,12 @@ document.getElementById('eggImage').addEventListener('click', function() {
       startTime = new Date();
     } else {
       var endTime = new Date();
-      var clickTime = (endTime - startTime) / 1000; // Calculate time between clicks in seconds
+      var clickTime = (endTime - startTime) / 1000;
       clickTimes.push(clickTime);
       startTime = endTime; // Update start time for next click
     }
     totalClicks++;
     if (totalClicks === maxClicks) {
-      // If the maximum number of clicks is reached, display leaderboard and reset game
       displayLeaderboard();
     } else {
       var randomIndex = Math.floor(Math.random() * eggImages.length);
@@ -76,9 +75,7 @@ document.getElementById('eggImage').addEventListener('click', function() {
 });
 
 function displayLeaderboard() {
-  // Save leaderboard to localStorage
   localStorage.setItem('leaderboard', JSON.stringify(clickTimes));
-  // Redirect to main.html
   window.location.href = 'WielkanocRules1.html';
 }
 
