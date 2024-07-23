@@ -3,11 +3,176 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-top: 50px;
     width: 100%;
     height: 100vh;
     background-color: #000;
     background-image: linear-gradient(62deg, #3a3d40 0%, #181719 100%);
 }
+
+@keyframes tekst{
+    40% {
+        font-size: 40px;
+    }
+
+    60% {
+        font-size: 80px;
+    }
+
+    100% {
+        font-size: 60px;
+    }
+}
+
+.powitanie>h3{
+    font-size: 0px;
+    animation: tekst 4s infinite;
+}
+
+.gift-box {
+    margin: 20px;
+    position: relative;
+    height: 370px;
+    width: 255px;
+    background-color: #ff0000;
+    cursor: pointer;
+    transition: transform 0.5s;
+}
+
+.gift-box .lid {
+    position: absolute;
+    width: 100%;
+    height: 30%;
+    background-color: #cc0000;
+    top: 0;
+    transform-origin: top;
+    transition: transform 0.5s;
+}
+
+.gift-box .box {
+    position: absolute;
+    width: 100%;
+    height: 70%;
+    background-color: #ff0000;
+    bottom: 0;
+}
+
+.gift-box .message {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    color: #ffffff;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* styles.css */
+.firework-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.firework {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background-color: red;
+    animation: launch 3s ease-in-out infinite, explode 0.5s ease-out infinite;
+    transform-origin: bottom center;
+}
+
+.firework:nth-child(1) {
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.firework:nth-child(2) {
+    left: 50%;
+    animation-delay: 1s;
+}
+
+.firework:nth-child(3) {
+    left: 80%;
+    animation-delay: 2s;
+}
+
+@keyframes launch {
+    0% {
+        transform: translateY(0);
+    }
+    80% {
+        transform: translateY(-50vh);
+    }
+    100% {
+        transform: translateY(-50vh);
+    }
+}
+
+@keyframes explode {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes particle {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+    }
+}
+
+.firework .particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: particle 1s ease-out forwards infinite;
+}
+
+.firework:nth-child(1) .particle:nth-child(1) { --x: 100px; --y: -100px; background-color: yellow; }
+.firework:nth-child(1) .particle:nth-child(2) { --x: -100px; --y: -100px; background-color: orange; }
+.firework:nth-child(1) .particle:nth-child(3) { --x: 50px; --y: -150px; background-color: pink; }
+.firework:nth-child(1) .particle:nth-child(4) { --x: -50px; --y: -150px; background-color: red; }
+.firework:nth-child(1) .particle:nth-child(5) { --x: 70px; --y: -170px; background-color: white; }
+.firework:nth-child(1) .particle:nth-child(6) { --x: -70px; --y: -170px; background-color: purple; }
+
+.firework:nth-child(2) .particle:nth-child(1) { --x: 100px; --y: -100px; background-color: blue; }
+.firework:nth-child(2) .particle:nth-child(2) { --x: -100px; --y: -100px; background-color: cyan; }
+.firework:nth-child(2) .particle:nth-child(3) { --x: 50px; --y: -150px; background-color: green; }
+.firework:nth-child(2) .particle:nth-child(4) { --x: -50px; --y: -150px; background-color: lime; }
+.firework:nth-child(2) .particle:nth-child(5) { --x: 70px; --y: -170px; background-color: teal; }
+.firework:nth-child(2) .particle:nth-child(6) { --x: -70px; --y: -170px; background-color: magenta; }
+
+.firework:nth-child(3) .particle:nth-child(1) { --x: 100px; --y: -100px; background-color: red; }
+.firework:nth-child(3) .particle:nth-child(2) { --x: -100px; --y: -100px; background-color: yellow; }
+.firework:nth-child(3) .particle:nth-child(3) { --x: 50px; --y: -150px; background-color: green; }
+.firework:nth-child(3) .particle:nth-child(4) { --x: -50px; --y: -150px; background-color: blue; }
+.firework:nth-child(3) .particle:nth-child(5) { --x: 70px; --y: -170px; background-color: purple; }
+.firework:nth-child(3) .particle:nth-child(6) { --x: -70px; --y: -170px; background-color: orange; }
+
+
 body{
     font-family: 'Poppins', sans-serif;
     font-size: 1.8rem;

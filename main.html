@@ -17,10 +17,37 @@
         </li>
     </ul>
 </nav>
-<section id="powitanie" class="powitanie"><h1>Witam na mojej stronie</h1><p>Kamil</p></section>
+<section id="powitanie" class="powitanie"><h1></h1><h3>Wszystkiego najlepszego z okazji urodzin</h3><p>Kamil</p>
+    <div class="firework-container">
+        <div class="firework">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="firework">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="firework">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+</section>
 <section id="projekty" class="projekty">
     <h2>Moje projekty</h2>
-    <div clss="projekty-siatka">
+    <div class="projekty-siatka">
     <ul>
         <li>
         <a href="Wielkanoc/Wielkanoc.html" class="tytulProjektu">
@@ -52,8 +79,25 @@
                 </p>
             </a>
             </li>
+            <li>
+                <div class="gift-box">
+                    <div class="lid"></div>
+                    <div class="box"></div>
+                    <div class="message">Masz prezent</div>
+                </div>
+            </li>
     </ul>
     </div>
 </section>
 </body>
+<script>
+    document.querySelector('.gift-box').addEventListener('click', function() {
+    const lid = document.querySelector('.lid');
+    const message = document.querySelector('.message');
+
+    lid.style.transform = 'rotateX(-150deg)';
+    message.style.display = 'block';
+    message.style.animation = 'fadeIn 1s forwards';
+});
+</script>
 </html>
