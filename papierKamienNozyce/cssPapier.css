@@ -1,0 +1,68 @@
+html{
+    box-sizing: border-box;
+    height:100%;
+}
+
+*,
+*::before,
+*::after
+{
+    box-sizing: 0;
+    margin:0;
+    padding: 0;
+}
+
+.strzalka{
+    width: 125px;
+    height: 135px;
+  }
+
+
+body{
+    align-items: center;
+    display:flex;
+    height: inherit;
+    justify-content: center;
+    background-color: rgba(216, 131, 75, 0.692);
+}
+
+.holder{
+    display: flex;
+    float: right;
+    justify-content: space-between;
+    padding: 10px;
+    margin:20px;
+}
+
+.kartonik{
+    align-items: center;
+    justify-content: center;
+    display:flex;
+    margin:10vh;
+    height: 40vh;
+    width:40vh;
+    backdrop-filter: blur(5.5px);
+    -webkit-backdrop-filter: blur(5.5px);
+    background: rgba(255, 255, 255 , 0.75);
+    border: 1px solid rgba(255, 255, 255 , 0.01);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(35, 35, 35, 0.1);
+    color: #232323;
+    flex-basis: 400px;
+    height:540px;
+    padding: 20px 35px;
+}
+button:hover{
+    background-color: rgba(216, 131, 75, 0.5);
+    animation:wybrany 0.5s;
+}
+
+@keyframes wybrany {
+    0% { transform: translateY(0); } 
+    100% { transform: translateY(-40px); }
+}
+
+button:active{
+    background-color: rgba(216, 131, 75, 0.315);
+}
+

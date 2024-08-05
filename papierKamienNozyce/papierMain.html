@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="cssPapier.css" rel="stylesheet"/>
+</head>
+<body>
+<img class="strzalka" id="strzalka" src="images/strzalka.png" alt="strzalka">
+<section class="holder">
+    <button class="kartonik" id="papier">
+        <span class="symbols"><img src="images/papier.png" alt="papier"></span>
+    </button>
+    <button class="kartonik" id="kamien">
+        <img src="images/kamien.png" alt="kamien">
+    </button>
+    <button class="kartonik" id="nozyce">
+        <span class="symbols"><img src="images/nozyce.png" alt="nozyce"></span>
+    </button>
+</section>
+</body>
+<script>
+    document.getElementById('strzalka').addEventListener('click', function() {
+    localStorage.removeItem("symbol");
+    window.location.href = '../main.html';
+  });
+  let symbol = localStorage.getItem("symbol");
+  document.getElementById('papier').addEventListener('click', function() {
+    localStorage.setItem("symbol", 0);
+    window.location.reload();
+    symbol=0;
+    zwyciezca();
+  });
+  document.getElementById('kamien').addEventListener('click', function() {
+    localStorage.setItem("symbol", 1);
+    window.location.reload();
+    symbol=1;
+    zwyciezca();
+  });
+  document.getElementById('nozyce').addEventListener('click', function() {
+    localStorage.setItem("symbol", 2);
+    window.location.reload();
+    symbol=2;
+    zwyciezca();
+  });
+  let symbolPrzeciwny = Math.floor(Math.random() * 10)%3;
+
+  function zwyciezca(){
+    if(symbol==symbolPrzeciwny)
+  {
+    alert("remis!");
+  }
+  else if(symbol==0)
+  {
+    if(symbolPrzeciwny==1)
+    {
+        alert("wygrałeś! Przeciwnik wybrał kamień");
+    }
+    else if(symbolPrzeciwny==2)
+    {
+        alert("przegrałeś! Przeciwnik wybrał nożyce");
+    }
+  }
+  else if(symbol==1)
+  {
+    if(symbolPrzeciwny==0)
+    {
+        alert("przegrałeś! Przeciwnik wybrał papier");
+        
+    }
+    else if(symbolPrzeciwny==2)
+    {
+        alert("wygrałeś! Przeciwnik wybrał nożyce");
+    }
+  }
+  else if(symbol==2){
+    if(symbolPrzeciwny==1)
+    {
+        alert("przegrałeś! Przeciwnik wybrał kamień");
+    }
+    else if(symbolPrzeciwny==0)
+    {
+        alert("wygrałeś! Przeciwnik wybrał papier");
+    }
+  }
+  }
+  
+
+  </script>
+</html>
