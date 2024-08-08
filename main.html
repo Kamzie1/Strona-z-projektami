@@ -9,11 +9,17 @@
 <body>
 <nav id="pasek" class="paske">
     <ul class="pasekLista">
-        <li>
-            <a href="#projekty">Projekty</a>
+        <li class="przejsce">
+            <a  href="#projekty">Projekty</a>
         </li>
-        <li>
-            <a href="#powitanie">About</a>
+        <li class="przejsce">
+            <a  href="#powitanie">About</a>
+        </li>
+        <li class="temp">
+            <p class="emoji"></p>
+        </li>
+        <li class="temp">
+            <p class="temperatura"></p>
         </li>
     </ul>
 </nav>
@@ -53,16 +59,6 @@
             </a>
             </li>
             <li>
-                <a href="kalkulator/kalkulatorMain.html" class="tytulProjektu">
-                    <img class="imgProjektu" src="kalkulator/images/kalkulator.jpg" alt="project">
-                    <p class="tytulProjektu2">
-                        <span class="code"></span>
-                            " Kalkulator "
-                        <span class="code"></span>
-                    </p>
-                </a>
-                </li>
-            <li>
                 <a href="papierKamienNozyce/papierMain.html" class="tytulProjektu">
                     <img class="imgProjektu" src="papierKamienNozyce/images/nozyce.png" alt="project">
                     <p class="tytulProjektu2">
@@ -76,4 +72,61 @@
     </div>
 </section>
 </body>
+<script>
+    const api_key = "484b0e8322e0194bfcba72eb63c009dd";
+    window.onload = async function(){
+        try{
+            const weatherData = await getWeatherData("Katowice");
+            displayWeatherInfo(weatherData);
+        }
+        catch(error){
+            console.error(error);
+        }
+    }
+
+    async function getWeatherData(miasto) {
+        const api_url = `http://api.openweathermap.org/data/2.5/weather?q=${miasto}&appid=${api_key}`;
+        const response = await fetch(api_url);
+        if(!response.ok){
+            throw new Error("Błąd w pobieraniu danych");
+        }
+
+        return await response.json();
+    }
+
+    function displayWeatherInfo(data)
+    {
+        const {
+               main:{temp},
+               weather: [{description, id}]}=data;
+        document.querySelector(".temperatura").textContent = `${(temp-273.15).toFixed(1)}°C`;
+        document.querySelector(".emoji").textContent = getWeatheremoji(id);
+        console.log(data);
+    }
+
+    function getWeatheremoji(weatherId){
+        switch(true)
+        {
+            case(weatherId >= 200 && weatherId <300):
+                return "🌩️";
+            case(weatherId >= 300 && weatherId <400):
+                return "🌦️";
+            case(weatherId >= 400 && weatherId <500):
+                return "🌧️";
+            case(weatherId >= 500 && weatherId <600):
+                return "🌧️";
+            case(weatherId >= 600 && weatherId <700):
+                return "❄️";
+            case(weatherId >= 700 && weatherId <800):
+                return "🌬️";
+            case(weatherId == 800):
+                return "☀️";
+            case(weatherId > 800 && weatherId <810):
+                return "☁️";
+            default:
+                return "Wystąpił błąd";
+        }
+    }
+
+</script>
 </html>
