@@ -59,6 +59,7 @@ html
     scroll-behavior: smooth;
     box-sizing: inherit;
 }
+
 nav ul {
     list-style-type: none;
     margin: 0;
@@ -78,6 +79,7 @@ nav ul {
     text-decoration: none;
   }
   nav {
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
@@ -85,6 +87,7 @@ nav ul {
     height: 50px;
     background-color: #333;
   }
+
 .projekty{
     background-color: #45567d;
     text-align: center;
@@ -155,8 +158,13 @@ h2{
 .pasekLista{
     height: 50px;
 }
-.pasekLista li :hover{
+.przejsce  :hover{
     background-color: #070555;
     color: #ffffff;
     border: 1px solid #070555;
+}
+
+.temp{
+   float: left;
+   margin-left: 20px;
 }
