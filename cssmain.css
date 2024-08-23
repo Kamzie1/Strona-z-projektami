@@ -18,28 +18,13 @@ body{
     padding: 0px;
 }
 h1{
-    display: block;
-    font-size: 2em;
-    margin-block-start: 0.67em;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
     font-weight: bold;
-    unicode-bidi: isolate;
     font-size: 6rem;
 }
 h1, h2{
     font-family: 'Raleway', sans-serif;
     font-weight: 700;
     text-align: center;
-}
-p{
-    display: block;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    unicode-bidi: isolate;
 }
 
 .powitanie > p{
@@ -54,17 +39,13 @@ p{
 }
 html
 {
-    box-sizing: border-box;
     font-size: 62.5%;
-    scroll-behavior: smooth;
-    box-sizing: inherit;
 }
 
 nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
   }
   
   nav li {
@@ -120,11 +101,9 @@ nav ul {
   {
     background-color: #b6bebe;
     color: #ffffff;
-    border: 1px solid #b6bebe;
   }
 section {
     display: block;
-    unicode-bidi: isolate;
 }
 h2{
     font-size: 300%;
@@ -139,7 +118,7 @@ h2{
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    margin-bottom: 6rem;
+    margin-bottom: 7rem;
 }
 .imgProjektu{
     height: 270px;
